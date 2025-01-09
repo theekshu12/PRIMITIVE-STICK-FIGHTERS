@@ -1,0 +1,250 @@
+﻿#include<windows.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<time.h>
+#include<string.h>
+#include<GL/glut.h>
+
+
+int player1x, player1y,
+player2x,player2y;
+int player1walkaction,
+player1walkcounter,
+player2walkaction,
+player2walkcounter;
+bool
+Player1punch,player2punch,
+player1waspunching,
+player2waspunching;
+int player1punchcounter,
+player2punchcounter;
+int player1moveback,
+Player2moveback;
+
+
+int player1hp, player2hp; //health
+point
+bool keystates[256];
+keys pressed either true or false
+char buffer[100];
+bool pause;
+void initgame()
+{
+player1x = 240;
+player1y = 300;
+player2x = 400;
+player2y = 300;
+player1hp = 10;
+player2hp = 10;
+player1moveback = 0;
+player2moveback = 0;
+player1walkaction = 0;
+player2walkaction = 0;
+player1punch = 0;
+player2punch = 0;
+}
+void KeyUpPress(unsigned char key,int x, int y ){
+switch(key){
+case 'w':
+keystates['w'] = false;
+break;
+case 's':
+keystates['s'] = false;
+break;
+case 'f':
+keystates['f'] = false;
+break;
+case 'b':
+keystates['b'] = false;
+break;
+case '8':
+keystates['8'] = false;
+break;
+case '2':
+keystates['2'] = false;
+break;
+case '4':
+keystates['4'] = false;
+break;
+case '6':
+keystates['6'] = false;
+break;
+case ' ':
+keystates[' '] = false;
+break;
+case 13:
+keystates[13] = false;
+break;
+case 'c':
+break;
+case 27:
+exit(0);
+}
+}
+void KeyDownPress(unsigned charkey, int x, int y ){
+switch(key){
+case 'w':
+keystates['w'] = true;
+break;
+case 's':
+keystates['s'] = true;
+break;
+case 'f':
+keystates['f'] = true;
+break;
+case 'b':
+keystates['b'] = true;
+break;
+case '8':
+keystates['8'] = true;
+break;
+case '2':
+keystates['2'] = true;
+break;
+case '4':
+keystates['4'] = true;
+break;
+case '6':
+keystates['6'] = true;
+break;
+case ' ':
+keystates[' '] = true;
+break;
+case 13:
+keystates[13] = true;
+break;
+case 'y':
+if(pause == true)
+{
+pause = false;
+initgame();
+}
+break;
+case 'n':
+if(pause == true)
+exit(0);
+break;
+case 27:
+exit(0);
+}
+}
+void drawString (void * font, char*s, float x, float y){
+unsigned int i;
+glRasterPos2f(x, y);
+for (i = 0; i < strlen (s); i++)
+glutBitmapCharacter (font,s[i]);
+}
+{
+void drawStickMan(int x, int y, bool mirror, int walkaction, bool punch)
+glLoadIdentity();
+glTranslatef(x, y, 0);
+if(mirror == true)
+glScalef(-1, 1, 1);
+glLineWidth(2);
+
+
+//head
+glBegin(GL_LINE_LOOP);
+glColor3f(0, 0, 0);
+glVertex2f(0 - 20, - 20 - 20);
+glVertex2f(0 - 20, - 20 + 20);
+glVertex2f(0 + 20, - 20 + 20);
+glVertex2f(0 + 20, - 20 - 20);
+glEnd();
+//body
+glBegin(GL_LINES);
+glColor3f(0, 0, 0);
+glVertex2f(0, 0);
+glVertex2f(0, 30);
+glEnd();
+if(walkaction == 1)
+{
+
+
+//feets
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 30);
+glVertex2f(0, 60);
+glVertex2f(0 + 10, 60);
+glEnd();
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 30);
+glVertex2f(0 + 15, 45);
+glVertex2f(0 - 3, 48);
+glVertex2f(0 + 2, 57);
+glEnd();
+}
+
+
+//stick man is walking
+else if (walkaction == 2)
+{
+//feets
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 30);
+glVertex2f(0 - 12, 55);
+glVertex2f(0 - 3, 60);
+glEnd();
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 30);
+glVertex2f(0 + 10, 60);
+glVertex2f(0 + 20, 55);
+glEnd();
+}
+
+
+//stick man is standing
+else
+{
+
+
+//feet
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 30);
+glVertex2f(0, 60);
+glVertex2f(0 + 10, 60);
+glEnd();
+}
+
+
+//hands of stick man if punch is true then draw the punch action
+if(punch == true)
+{
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 20);
+glVertex2f(0 + 5, 30);
+glVertex2f(0 + 10, 15);
+glEnd();
+glBegin(GL_LINES);
+glColor3f(0, 0, 0);
+glVertex2f(0, 20);
+glVertex2f(0 + 40, 20);
+glEnd();
+}
+
+
+//else no punch action just standing
+else
+{
+}
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 20);
+glVertex2f(0 + 10, 30);
+glVertex2f(0 + 20, 15);
+glEnd();
+glBegin(GL_LINE_STRIP);
+glColor3f(0, 0, 0);
+glVertex2f(0, 20);
+glVertex2f(0 + 15, 30);
+glVertex2f(0 + 25, 15);
+glEnd();
+glLoadIdentity();
+}
